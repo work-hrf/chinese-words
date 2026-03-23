@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>描述人物特征的词语大全 · 北大中文语言院士编著</title>
+  <style>
+    :root {
+      --primary: #8B1A1A;
+      --primary-light: #c0392b;
+      --gold: #C9A84C;
+      --gold-light: #f0d080;
+      --bg: #fdf6ec;
+      --card-bg: #fff;
+      --text: #2c2c2c;
+      --text-muted: #666;
+      --border: #e8d5b0;
+      --shadow: 0 4px 20px rgba(139,26,26,0.08);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Noto Serif SC", "SimSun", "宋体", serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── 顶部横幅 ── */
+    header {
+      background: linear-gradient(135deg, #5a0e0e 0%, #8B1A1A 50%, #7a1010 100%);
+      color: #fff;
+      text-align: center;
+      padding: 60px 20px 50px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: "❖";
+      position: absolute;
+      font-size: 300px;
+      opacity: .04;
+      top: -60px; left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    header h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      letter-spacing: .15em;
+      font-weight: 700;
+      color: var(--gold-light);
+      text-shadow: 0 2px 8px rgba(0,0,0,.4);
+    }
+    header h1 span {
+      display: block;
+      font-size: .45em;
+      color: rgba(255,255,255,.7);
+      letter-spacing: .3em;
+      margin-top: 8px;
+      font-weight: 400;
+    }
+    header p.subtitle {
+      margin-top: 16px;
+      font-size: .95rem;
+      color: rgba(255,255,255,.65);
+      letter-spacing: .08em;
+    }
+    .divider-ornament {
+      margin: 18px auto 0;
+      width: 180px;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+
+    /* ── 主体布局 ── */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* ── 导航锚点 ── */
+    nav.toc {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-bottom: 40px;
+      box-shadow: var(--shadow);
+    }
+    nav.toc h2 {
+      font-size: 1rem;
+      color: var(--primary);
+      letter-spacing: .12em;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    nav.toc ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 20px;
+      list-style: none;
+    }
+    nav.toc ul li a {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: .92rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      transition: all .2s;
+      display: inline-block;
+    }
+    nav.toc ul li a:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* ── 大类区块 ── */
+    .section {
+      margin-bottom: 48px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .section-icon {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: .06em;
+    }
+    .section-title small {
+      display: block;
+      font-size: .75rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: .1em;
+      margin-top: 3px;
+    }
+
+    /* ── 卡片网格 ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(139,26,26,.13);
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-title .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .word-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .tag {
+      font-size: .82rem;
+      padding: 4px 10px;
+      border-radius: 16px;
+      letter-spacing: .04em;
+      cursor: default;
+      transition: transform .15s;
+    }
+    .tag:hover { transform: scale(1.06); }
+
+    /* 各大类配色 */
+    .color-red   { --c1:#8B1A1A; --c2:#fdecea; --c3:#c0392b; }
+    .color-blue  { --c1:#1a4e8b; --c2:#eaf0fd; --c3:#2980b9; }
+    .color-green { --c1:#1a6b3a; --c2:#eafaf1; --c3:#27ae60; }
+    .color-gold  { --c1:#7d5a00; --c2:#fdf6e3; --c3:#c9a84c; }
+    .color-purple{ --c1:#5c1a8b; --c2:#f5eafd; --c3:#8e44ad; }
+    .color-teal  { --c1:#1a6b6b; --c2:#eafafa; --c3:#16a085; }
+    .color-orange{ --c1:#7d3300; --c2:#fdf0e3; --c3:#e67e22; }
+    .color-pink  { --c1:#8b1a5c; --c2:#fdeaf5; --c3:#c0392b; }
+
+    [class*="color-"] .section-icon { background: var(--c2); color: var(--c1); border: 2px solid var(--c3); }
+    [class*="color-"] .section-title { color: var(--c1); }
+    [class*="color-"] .card { border-color: color-mix(in srgb, var(--c3) 30%, #fff); }
+    [class*="color-"] .card-title { color: var(--c1); }
+    [class*="color-"] .card-title .dot { background: var(--c3); }
+    [class*="color-"] .tag { background: var(--c2); color: var(--c1); border: 1px solid color-mix(in srgb, var(--c3) 40%, #fff); }
+
+    /* ── 引言/警句 ── */
+    .quote-box {
+      background: linear-gradient(135deg, #f8f0dc, #fdf6ec);
+      border-left: 4px solid var(--gold);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 18px 22px;
+      margin-bottom: 40px;
+      font-size: .95rem;
+      color: #5a4a00;
+      line-height: 1.9;
+    }
+    .quote-box strong { color: var(--primary); }
+
+    /* ── 页脚 ── */
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      background: #2c1010;
+      color: rgba(255,255,255,.5);
+      font-size: .82rem;
+      letter-spacing: .1em;
+    }
+    footer span { color: var(--gold); }
+
+    @media (max-width: 600px) {
+      .cards { grid-template-columns: 1fr; }
+      header { padding: 40px 16px 36px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>描述人物特征的词语大全
+    <span>COMPREHENSIVE LEXICON OF HUMAN CHARACTER DESCRIPTORS</span>
+  </h1>
+  <p class="subtitle">北京大学中文系语言学研究编著 · 汉语词汇分类系统</p>
+  <div class="divider-ornament"></div>
+</header>
+
+<main>
+
+  <div class="quote-box">
+    <strong>【编著说明】</strong>汉语描绘人物的词汇体系极为丰富，自《诗经》至现代白话，词语层层叠叠、语义微妙。本辞典按<strong>外貌形态、性格气质、智慧才能、品德修养、情绪心理、言谈举止、处世风格、体能体质</strong>八大维度系统梳理，兼收褒义、中性、贬义，以资研究与写作参考。
+  </div>
+
+  <!-- 导航 -->
+  <nav class="toc">
+    <h2>▶ 目录索引</h2>
+    <ul>
+      <li><a href="#sec1">① 外貌形态</a></li>
+      <li><a href="#sec2">② 性格气质</a></li>
+      <li><a href="#sec3">③ 智慧才能</a></li>
+      <li><a href="#sec4">④ 品德修养</a></li>
+      <li><a href="#sec5">⑤ 情绪心理</a></li>
+      <li><a href="#sec6">⑥ 言谈举止</a></li>
+      <li><a href="#sec7">⑦ 处世风格</a></li>
+      <li><a href="#sec8">⑧ 体能体质</a></li>
+    </ul>
+  </nav>
+
+  <!-- ① 外貌形态 -->
+  <section class="section color-red" id="sec1">
+    <div class="section-header">
+      <div class="section-icon">👤</div>
+      <div>
+        <div class="section-title">一、外貌形态
+          <small>APPEARANCE · PHYSIQUE · DEMEANOR</small>
+        </div>
+      </div>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>整体形象（褒义）</div>
+        <div class="word-list">
+          <span class="tag">风姿绰约</span><span class="tag">仪表堂堂</span><span class="tag">相貌英俊</span>
+          <span class="tag">玉树临风</span><span class="tag">丰神俊朗</span><span class="tag">气宇轩昂</span>
+          <span class="tag">英姿飒爽</span><span class="tag">眉清目秀</span><span class="tag">面如冠玉</span>
+          <span class="tag">清秀脱俗</span><span class="tag">神采奕奕</span><span class="tag">丰神飘逸</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>女性容颜（褒义）</div>
+        <div class="word-list">
+          <span class="tag">沉鱼落雁</span><span class="tag">闭月羞花</span><span class="tag">倾国倾城</span>
+          <span class="tag">国色天香</span><span class="tag">花容月貌</span><span class="tag">天生丽质</span>
+          <span class="tag">冰肌玉骨</span><span class="tag">窈窕淑女</span><span class="tag">明眸皓齿</span>
+          <span class="tag">婀娜多姿</span><span class="tag">娇媚动人</span><span class="tag">楚楚动人</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>气质神韵</div>
+        <div class="word-list">
+          <span class="tag">飘逸出尘</span><span class="tag">超凡脱俗</span><span class="tag">雍容华贵</span>
+          <span class="tag">端庄典雅</span><span class="tag">落落大方</span><span class="tag">潇洒不羁</span>
+          <span class="tag">儒雅温文</span><span class="tag">仙风道骨</span><span class="tag">书卷气十足</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>体型身材</div>
+        <div class="word-list">
+          <span class="tag">高挑修长</span><span class="tag">身材魁梧</span><span class="tag">虎背熊腰</span>
+          <span class="tag">体态轻盈</span><span class="tag">骨骼清奇</span><span class="tag">肥头大耳</span>
+          <span class="tag">矮小瘦弱</span><span class="tag">瘦骨嶙峋</span><span class="tag">大腹便便</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>整体形象（贬义）</div>
+        <div class="word-list">
+          <span class="tag">獐头鼠目</span><span class="tag">尖嘴猴腮</span><span class="tag">面目可憎</span>
+          <span class="tag">其貌不扬</span><span class="tag">蓬头垢面</span><span class="tag">邋里邋遢</span>
+          <span class="tag">老态龙钟</span><span class="tag">鹤发鸡皮</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>面部特征</div>
+        <div class="word-list">
+          <span class="tag">方正刚毅</span><span class="tag">浓眉大眼</span><span class="tag">高鼻深目</span>
+          <span class="tag">满面春风</span><span class="tag">愁眉苦脸</span><span class="tag">面无表情</span>
+          <span class="tag">笑容可掬</span><span class="tag">冷峻刚毅</span><span class="tag">温润如玉</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ② 性格气质 -->
+  <section class="section color-blue" id="sec2">
+    <div class="section-header">
+      <div class="section-icon">🌊</div>
+      <div>
+        <div class="section-title">二、性格气质
+          <small>PERSONALITY · TEMPERAMENT · CHARACTER</small>
+        </div>
+      </div>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>积极外向型</div>
+        <div class="word-list">
+          <span class="tag">活泼开朗</span><span class="tag">热情洋溢</span><span class="tag">豪爽直率</span>
+          <span class="tag">乐观向上</span><span class="tag">风趣幽默</span><span class="tag">平易近人</span>
+          <span class="tag">侠肝义胆</span><span class="tag">爱憎分明</span><span class="tag">敢作敢为</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>沉稳内敛型</div>
+        <div class="word-list">
+          <span class="tag">沉稳持重</span><span class="tag">深沉内敛</span><span class="tag">处事冷静</span>
+          <span class="tag">城府深沉</span><span class="tag">喜怒不形于色</span><span class="tag">老成持重</span>
+          <span class="tag">稳如泰山</span><span class="tag">淡定从容</span><span class="tag">泰然自若</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>温柔细腻型</div>
+        <div class="word-list">
+          <span class="tag">温柔体贴</span><span class="tag">心细如发</span><span class="tag">善解人意</span>
+          <span class="tag">柔情似水</span><span class="tag">体察入微</span><span class="tag">悲天悯人</span>
+          <span class="tag">多愁善感</span><span class="tag">心怀慈悲</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>刚烈豪迈型</div>
+        <div class="word-list">
+          <span class="tag">刚正不阿</span><span class="tag">铁骨铮铮</span><span class="tag">豪气干云</span>
+          <span class="tag">气吞山河</span><span class="tag">慷慨激昂</span><span class="tag">叱咤风云</span>
+          <span class="tag">威武不屈</span><span class="tag">宁折不弯</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>负面性格</div>
+        <div class="word-list">
+          <span class="tag">性情乖戾</span><span class="tag">暴戾恣睢</span><span class="tag">阴险狡诈</span>
+          <span class="tag">自私自利</span><span class="tag">斤斤计较</span><span class="tag">患得患失</span>
+          <span class="tag">优柔寡断</span><span class="tag">刚愎自用</span><span class="tag">偏执固执</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>孤僻散漫型</div>
+        <div class="word-list">
+          <span class="tag">孤僻冷漠</span><span class="tag">孤芳自赏</span><span class="tag">清高自负</span>
+          <span class="tag">散漫随性</span><span class="tag">我行我素</span><span class="tag">玩世不恭</span>
+          <span class="tag">放荡不羁</span><span class="tag">桀骜不驯</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ③ 智慧才能 -->
+  <section class="section color-green" id="sec3">
+    <div class="section-header">
+      <div class="section-icon">💡</div>
+      <div>
+        <div class="section-title">三、智慧才能
+          <small>INTELLECT · TALENT · ABILITY</small>
+        </div>
+      </div>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>聪明智慧</div>
+        <div class="word-list">
+          <span class="tag">聪明绝顶</span><span class="tag">才智过人</span><span class="tag">慧眼如炬</span>
+          <span class="tag">机智过人</span><span class="tag">冰雪聪明</span><span class="tag">天资聪颖</span>
+          <span class="tag">颖悟绝伦</span><span class="tag">博闻强识</span><span class="tag">过目不忘</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>文学才华</div>
+        <div class="word-list">
+          <span class="tag">才高八斗</span><span class="tag">学富五车</span><span class="tag">出口成章</span>
+          <span class="tag">妙笔生花</span><span class="tag">文采斐然</span><span class="tag">锦绣文章</span>
+          <span class="tag">笔走龙蛇</span><span class="tag">援笔立就</span><span class="tag">倚马可待</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>谋略智谋</div>
+        <div class="word-list">
+          <span class="tag">足智多谋</span><span class="tag">老谋深算</span><span class="tag">运筹帷幄</span>
+          <span class="tag">深谋远虑</span><span class="tag">高瞻远瞩</span><span class="tag">见微知著</span>
+          <span class="tag">料事如神</span><span class="tag">未卜先知</span><span class="tag">胸有成竹</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>技艺专精</div>
+        <div class="word-list">
+          <span class="tag">技艺超群</span><span class="tag">炉火纯青</span><span class="tag">出神入化</span>
+          <span class="tag">登峰造极</span><span class="tag">巧夺天工</span><span class="tag">匠心独运</span>
+          <span class="tag">鬼斧神工</span><span class="tag">独树一帜</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>愚钝鲁莽</div>
+        <div class="word-list">
+          <span class="tag">愚昧无知</span><span class="tag">鲁莽冲动</span><span class="tag">目光短浅</span>
+          <span class="tag">浅陋无识</span><span class="tag">孤陋寡闻</span><span class="tag">不学无术</span>
+          <span class="tag">碌碌无为</span><span class="tag">胸无大志</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ④ 品德修养 -->
+  <section class="section color-gold" id="sec4">
+    <div class="section-header">
+      <div class="section-icon">⚖️</div>
+      <div>
+        <div class="section-title">四、品德修养
+          <small>VIRTUE · MORALITY · INTEGRITY</small>
+        </div>
+      </div>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>仁义诚信</div>
+        <div class="word-list">
+          <span class="tag">仁慈善良</span><span class="tag">忠厚老实</span><span class="tag">诚实守信</span>
+          <span class="tag">一诺千金</span><span class="tag">言而有信</span><span class="tag">宅心仁厚</span>
+          <span class="tag">推己及人</span><span class="tag">将心比心</span><span class="tag">菩萨心肠</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>清廉高洁</div>
+        <div class="word-list">
+          <span class="tag">两袖清风</span><span class="tag">清廉自守</span><span class="tag">高风亮节</span>
+          <span class="tag">洁身自好</span><span class="tag">出淤泥而不染</span><span class="tag">克己奉公</span>
+          <span class="tag">廉洁奉公</span><span class="tag">铁面无私</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>谦逊宽厚</div>
+        <div class="word-list">
+          <span class="tag">虚怀若谷</span><span class="tag">谦谦君子</span><span class="tag">礼贤下士</span>
+          <span class="tag">宽宏大量</span><span class="tag">海纳百川</span><span class="tag">豁达大度</span>
+          <span class="tag">不计前嫌</span><span class="tag">以德报怨</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>奸诈卑鄙</div>
+        <div class="word-list">
+          <span class="tag">奸诈狡猾</span><span class="tag">口蜜腹剑</span><span class="tag">笑里藏刀</span>
+          <span class="tag">两面三刀</span><span class="tag">见利忘义</span><span class="tag">落井下石</span>
+          <span class="tag">忘恩负义</span><span class="tag">卖友求荣</span><span class="tag">蝇营狗苟</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>勤勉自律</div>
+        <div class="word-list">
+          <span class="tag">勤勤恳恳</span><span class="tag">兢兢业业</span><span class="tag">任劳任怨</span>
+          <span class="tag">废寝忘食</span><span class="tag">悬梁刺股</span><span class="tag">锲而不舍</span>
+          <span class="tag">持之以恒</span><span class="tag">坚韧不拔</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ⑤ 情绪心理 -->
+  <section class="section color-purple" id="sec5">
+    <div class="section-header">
+      <div class="section-icon">🎭</div>
+      <div>
+        <div class="section-title">五、情绪心理
+          <small>EMOTION · PSYCHOLOGY · MOOD</small>
+        </div>
+      </div>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>喜悦愉快</div>
+        <div class="word-list">
+          <span class="tag">欢天喜地</span><span class="tag">喜出望外</span><span class="tag">兴高采烈</span>
+          <span class="tag">手舞足蹈</span><span class="tag">乐不可支</span><span class="tag">喜笑颜开</span>
+          <span class="tag">如沐春风</span><span class="tag">心旷神怡</span><span class="tag">怡然自得</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>悲伤忧愁</div>
+        <div class="word-list">
+          <span class="tag">愁肠百结</span><span class="tag">肝肠寸断</span><span class="tag">痛不欲生</span>
+          <span class="tag">以泪洗面</span><span class="tag">郁郁寡欢</span><span class="tag">黯然神伤</span>
+          <span class="tag">悲痛欲绝</span><span class="tag">形销骨立</span><span class="tag">惆怅满怀</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>愤怒激动</div>
+        <div class="word-list">
+          <span class="tag">怒发冲冠</span><span class="tag">勃然大怒</span><span class="tag">义愤填膺</span>
+          <span class="tag">咬牙切齿</span><span class="tag">怒火中烧</span><span class="tag">拍案而起</span>
+          <span class="tag">大发雷霆</span><span class="tag">暴跳如雷</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>恐惧焦虑</div>
+        <div class="word-list">
+          <span class="tag">胆战心惊</span><span class="tag">惶恐不安</span><span class="tag">如坐针毡</span>
+          <span class="tag">草木皆兵</span><span class="tag">战战兢兢</span><span class="tag">心惊肉跳</span>
+          <span class="tag">魂飞魄散</span><span class="tag">忐忑不安</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>平静豁达</div>
+        <div class="word-list">
+          <span class="tag">处之泰然</span><span class="tag">宠辱不惊</span><span class="tag">波澜不惊</span>
+          <span class="tag">淡然处之</span><span class="tag">超然物外</span><span class="tag">随遇而安</span>
+          <span class="tag">知足常乐</span><span class="tag">心如止水</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ⑥ 言谈举止 -->
+  <section class="section color-teal" id="sec6">
+    <div class="section-header">
+      <div class="section-icon">🗣️</div>
+      <div>
+        <div class="section-title">六、言谈举止
+          <small>SPEECH · MANNER · BEHAVIOR</small>
+        </div>
+      </div>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>口才善辩</div>
+        <div class="word-list">
+          <span class="tag">能言善辩</span><span class="tag">巧舌如簧</span><span class="tag">口若悬河</span>
+          <span class="tag">滔滔不绝</span><span class="tag">舌灿莲花</span><span class="tag">出口成章</span>
+          <span class="tag">辩才无碍</span><span class="tag">妙语连珠</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>举止优雅</div>
+        <div class="word-list">
+          <span class="tag">举止得体</span><span class="tag">进退有度</span><span class="tag">不失风范</span>
+          <span class="tag">从容不迫</span><span class="tag">优雅大方</span><span class="tag">彬彬有礼</span>
+          <span class="tag">温文尔雅</span><span class="tag">谈吐不俗</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>言语失当</div>
+        <div class="word-list">
+          <span class="tag">信口雌黄</span><span class="tag">胡言乱语</span><span class="tag">出言不逊</span>
+          <span class="tag">恶语中伤</span><span class="tag">颠三倒四</span><span class="tag">语无伦次</span>
+          <span class="tag">废话连篇</span><span class="tag">口不择言</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>处事行为</div>
+        <div class="word-list">
+          <span class="tag">雷厉风行</span><span class="tag">说干就干</span><span class="tag">一丝不苟</span>
+          <span class="tag">有条不紊</span><span class="tag">井井有条</span><span class="tag">一板一眼</span>
+          <span class="tag">拖拖拉拉</span><span class="tag">马马虎虎</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ⑦ 处世风格 -->
+  <section class="section color-orange" id="sec7">
+    <div class="section-header">
+      <div class="section-icon">🏮</div>
+      <div>
+        <div class="section-title">七、处世风格
+          <small>WORLDVIEW · SOCIAL STYLE · LIFE ATTITUDE</small>
+        </div>
+      </div>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>进取拼搏</div>
+        <div class="word-list">
+          <span class="tag">奋发图强</span><span class="tag">志存高远</span><span class="tag">百折不挠</span>
+          <span class="tag">不屈不挠</span><span class="tag">勇往直前</span><span class="tag">披荆斩棘</span>
+          <span class="tag">所向披靡</span><span class="tag">一往无前</span><span class="tag">卧薪尝胆</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>与人为善</div>
+        <div class="word-list">
+          <span class="tag">广结善缘</span><span class="tag">济世为怀</span><span class="tag">乐善好施</span>
+          <span class="tag">扶危济困</span><span class="tag">雪中送炭</span><span class="tag">古道热肠</span>
+          <span class="tag">急公好义</span><span class="tag">路见不平</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>随遇超脱</div>
+        <div class="word-list">
+          <span class="tag">淡泊名利</span><span class="tag">超然脱俗</span><span class="tag">与世无争</span>
+          <span class="tag">清心寡欲</span><span class="tag">隐逸山林</span><span class="tag">归隐田园</span>
+          <span class="tag">独善其身</span><span class="tag">不问世事</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>势利趋炎</div>
+        <div class="word-list">
+          <span class="tag">趋炎附势</span><span class="tag">见风使舵</span><span class="tag">随波逐流</span>
+          <span class="tag">阿谀奉承</span><span class="tag">拍马溜须</span><span class="tag">媚上欺下</span>
+          <span class="tag">虎假虎威</span><span class="tag">狐假虎威</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ⑧ 体能体质 -->
+  <section class="section color-pink" id="sec8">
+    <div class="section-header">
+      <div class="section-icon">💪</div>
+      <div>
+        <div class="section-title">八、体能体质
+          <small>PHYSIQUE · STRENGTH · VITALITY</small>
+        </div>
+      </div>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>强健有力</div>
+        <div class="word-list">
+          <span class="tag">孔武有力</span><span class="tag">力大如牛</span><span class="tag">膀大腰圆</span>
+          <span class="tag">虎虎生风</span><span class="tag">精力充沛</span><span class="tag">生龙活虎</span>
+          <span class="tag">虎背熊腰</span><span class="tag">威风凛凛</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>轻盈敏捷</div>
+        <div class="word-list">
+          <span class="tag">身手矫健</span><span class="tag">行云流水</span><span class="tag">动如脱兔</span>
+          <span class="tag">健步如飞</span><span class="tag">轻盈如燕</span><span class="tag">腾挪跌宕</span>
+          <span class="tag">翻山越岭</span><span class="tag">如履平地</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>体弱多病</div>
+        <div class="word-list">
+          <span class="tag">弱不禁风</span><span class="tag">手无缚鸡之力</span><span class="tag">病入膏肓</span>
+          <span class="tag">形容枯槁</span><span class="tag">风烛残年</span><span class="tag">精疲力竭</span>
+          <span class="tag">筋疲力尽</span><span class="tag">羸弱多病</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>年龄状态</div>
+        <div class="word-list">
+          <span class="tag">年富力强</span><span class="tag">风华正茂</span><span class="tag">血气方刚</span>
+          <span class="tag">青春年少</span><span class="tag">精神矍铄</span><span class="tag">老当益壮</span>
+          <span class="tag">垂暮之年</span><span class="tag">耄耋之年</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>© 2025 北京大学中文系 &nbsp;|&nbsp; <span>汉语人物特征词汇系统分类</span> &nbsp;|&nbsp; 仅供学术研究与写作参考</p>
+</footer>
+
+</body>
+</html>
