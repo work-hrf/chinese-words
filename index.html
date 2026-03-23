@@ -246,6 +246,108 @@
       .cards { grid-template-columns: 1fr; }
       header { padding: 40px 16px 36px; }
     }
+
+    /* ── 词语标签可点击 ── */
+    .tag {
+      cursor: pointer !important;
+    }
+    .tag:hover {
+      transform: scale(1.08);
+      box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    }
+
+    /* ── 弹出面板遮罩 ── */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 9998;
+      backdrop-filter: blur(2px);
+    }
+    .popup-overlay.active { display: block; }
+
+    /* ── 弹出面板 ── */
+    .popup-panel {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(.9);
+      z-index: 9999;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(139,26,26,.25), 0 4px 20px rgba(0,0,0,.15);
+      padding: 32px 36px 28px;
+      min-width: 320px;
+      max-width: 500px;
+      width: 90vw;
+      transition: transform .25s cubic-bezier(.34,1.56,.64,1), opacity .2s;
+      opacity: 0;
+      border-top: 4px solid var(--primary);
+    }
+    .popup-panel.active {
+      display: block;
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    .popup-word {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: .1em;
+      margin-bottom: 6px;
+    }
+    .popup-pinyin {
+      font-size: .9rem;
+      color: var(--text-muted);
+      letter-spacing: .12em;
+      margin-bottom: 16px;
+    }
+    .popup-divider {
+      height: 1px;
+      background: linear-gradient(to right, var(--primary), transparent);
+      margin-bottom: 16px;
+    }
+    .popup-meaning {
+      font-size: 1rem;
+      line-height: 1.9;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+    .popup-example {
+      font-size: .88rem;
+      color: #5a4a00;
+      background: #fdf6e3;
+      border-left: 3px solid var(--gold);
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      line-height: 1.8;
+    }
+    .popup-example::before {
+      content: "📖 例：";
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .popup-close {
+      position: absolute;
+      top: 14px; right: 16px;
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      line-height: 1;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background .15s, color .15s;
+    }
+    .popup-close:hover { background: #f0e0e0; color: var(--primary); }
+    .popup-no-data {
+      color: var(--text-muted);
+      font-size: .9rem;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -757,6 +859,151 @@
 <footer>
   <p>© 2025 北京大学中文系 &nbsp;|&nbsp; <span>汉语人物特征词汇系统分类</span> &nbsp;|&nbsp; 仅供学术研究与写作参考</p>
 </footer>
+
+<!-- 弹出遮罩 -->
+<div class="popup-overlay" id="popupOverlay"></div>
+
+<!-- 弹出面板 -->
+<div class="popup-panel" id="popupPanel">
+  <button class="popup-close" id="popupClose" title="关闭">✕</button>
+  <div class="popup-word" id="popupWord"></div>
+  <div class="popup-pinyin" id="popupPinyin"></div>
+  <div class="popup-divider"></div>
+  <div class="popup-meaning" id="popupMeaning"></div>
+  <div class="popup-example" id="popupExample"></div>
+</div>
+
+<script>
+const wordData = {
+  // 外貌形态
+  "风姿绰约": { pinyin: "fēng zī chuò yuē", meaning: "【褒义】形容女子姿态优美，体态轻盈，气质出众，令人赏心悦目。", example: "她风姿绰约地走进大厅，顿时吸引了所有人的目光。" },
+  "仪表堂堂": { pinyin: "yí biǎo táng táng", meaning: "【褒义】形容人的外貌端正大方，举止庄重，气度威仪。", example: "他仪表堂堂，举止得体，给客户留下了极好的印象。" },
+  "玉树临风": { pinyin: "yù shù lín fēng", meaning: "【褒义】形容男子身姿挺拔，风度翩翩，如玉树般俊美。", example: "那位年轻将军玉树临风，颇有大将风度。" },
+  "气宇轩昂": { pinyin: "qì yǔ xuān áng", meaning: "【褒义】形容人精神饱满，气度不凡，威武雄壮，令人敬仰。", example: "他气宇轩昂地站在台上，赢得了全场掌声。" },
+  "英姿飒爽": { pinyin: "yīng zī sà shuǎng", meaning: "【褒义】形容人英武矫健，精神焕发，姿态豪迈。", example: "女兵们英姿飒爽地走过检阅台，令人振奋。" },
+  "眉清目秀": { pinyin: "méi qīng mù xiù", meaning: "【褒义】形容人五官清晰俊美，眉目灵动，容貌清秀。", example: "这个孩子眉清目秀，聪明伶俐，人见人爱。" },
+  "神采奕奕": { pinyin: "shén cǎi yì yì", meaning: "【褒义】形容人精神饱满，容光焕发，神情生动。", example: "退休后他养生有道，神采奕奕，看起来比实际年龄年轻十岁。" },
+  "沉鱼落雁": { pinyin: "chén yú luò yàn", meaning: "【褒义】形容女子容貌极美，鱼见了沉入水底，雁见了降落云端。出自《庄子·齐物论》。", example: "她有沉鱼落雁之貌，闭月羞花之容，是当地有名的美人。" },
+  "闭月羞花": { pinyin: "bì yuè xiū huā", meaning: "【褒义】形容女子容貌美丽，月亮也为之遮蔽，花朵也为之害羞。常与"沉鱼落雁"并用。", example: "古人以"沉鱼落雁、闭月羞花"来形容四大美人。" },
+  "倾国倾城": { pinyin: "qīng guó qīng chéng", meaning: "【褒义】形容女子容貌极美，令人为之倾倒，甚至会导致国家倾覆。", example: "她有倾国倾城的容貌，却有着淡泊名利的心境。" },
+  "国色天香": { pinyin: "guó sè tiān xiāng", meaning: "【褒义】原指牡丹花，后形容女子容貌出众，气质芬芳，堪称一国之美。", example: "她国色天香，才情兼备，令无数人倾慕。" },
+  "天生丽质": { pinyin: "tiān shēng lì zhì", meaning: "【褒义】形容人天生就拥有美丽的容貌，不需要刻意装扮。出自白居易《长恨歌》。", example: "她天生丽质，不施粉黛也美丽动人。" },
+  "窈窕淑女": { pinyin: "yǎo tiǎo shū nǚ", meaning: "【褒义】形容女子体态修长优美，性情温婉贤淑。出自《诗经·关雎》。", example: "窈窕淑女，君子好逑，这是中国最古老的爱情诗句之一。" },
+  "婀娜多姿": { pinyin: "ē nuó duō zī", meaning: "【褒义】形容女子体态柔美轻盈，姿态优雅，妩媚动人。", example: "她身着旗袍，婀娜多姿地走过长廊，宛如画中人。" },
+  "超凡脱俗": { pinyin: "chāo fán tuō sú", meaning: "【褒义】形容人的气质、才能或境界超出常人，不拘泥于世俗之见。", example: "她的画作超凡脱俗，有一种难以言说的意境之美。" },
+  "雍容华贵": { pinyin: "yōng róng huá guì", meaning: "【褒义】形容人仪态从容大方，气质优雅高贵，有皇室贵族之风。", example: "老夫人雍容华贵，举手投足间尽显大家风范。" },
+  "落落大方": { pinyin: "luò luò dà fāng", meaning: "【褒义】形容人举止自然洒脱，不拘谨，不矫揉造作，大气从容。", example: "她初次登台便落落大方，毫不怯场，赢得满堂喝彩。" },
+  "獐头鼠目": { pinyin: "zhāng tóu shǔ mù", meaning: "【贬义】形容人面貌猥琐，獐子般的头，老鼠般的眼，比喻容貌丑陋或神情鬼祟。", example: "那人獐头鼠目，一看就不是善类，大家都对他保持警惕。" },
+  "面目可憎": { pinyin: "miàn mù kě zēng", meaning: "【贬义】形容人面貌丑陋令人厌恶，也比喻行为举止令人讨厌。", example: "他平日里阿谀奉承，面目可憎，没有人真心愿意与他交往。" },
+  "其貌不扬": { pinyin: "qí mào bù yáng", meaning: "【中性/贬义】形容人容貌普通，不出众，相貌平平，没有过人之处。", example: "他其貌不扬，却有一颗善良的心和出色的才华。" },
+  "虎背熊腰": { pinyin: "hǔ bèi xióng yāo", meaning: "【中性】形容人体格强壮高大，背宽如虎，腰粗如熊，身材雄健。", example: "这位摔跤手虎背熊腰，力大无穷，是赛场上的常胜将军。" },
+
+  // 性格气质
+  "活泼开朗": { pinyin: "huó pō kāi lǎng", meaning: "【褒义】形容人性格生动活跃，心情舒畅，乐于与人交往，充满朝气。", example: "她性格活泼开朗，走到哪里都能成为大家的开心果。" },
+  "热情洋溢": { pinyin: "rè qíng yáng yì", meaning: "【褒义】形容人情感充沛，对人对事充满热忱，积极主动，富有感染力。", example: "他热情洋溢地迎接每一位来访的客人，让人倍感温暖。" },
+  "豪爽直率": { pinyin: "háo shuǎng zhí shuài", meaning: "【褒义】形容人性格豪迈爽快，说话做事直接坦率，不虚伪做作。", example: "北方人多豪爽直率，有什么说什么，令人信赖。" },
+  "沉稳持重": { pinyin: "chén wěn chí zhòng", meaning: "【褒义】形容人性格沉着稳重，遇事不慌乱，处置审慎稳妥。", example: "作为团队领导，他沉稳持重，每逢危机都能冷静应对。" },
+  "泰然自若": { pinyin: "tài rán zì ruò", meaning: "【褒义】形容人遇到紧急情况或压力时，镇定自如，毫不慌乱，处之坦然。", example: "面对法庭上的质问，他泰然自若，从容应答。" },
+  "刚正不阿": { pinyin: "gāng zhèng bù ē", meaning: "【褒义】形容人性格刚直，坚守原则，不向权势妥协，不阿谀奉承。", example: "包拯刚正不阿，铁面无私，是历史上著名的清官。" },
+  "性情乖戾": { pinyin: "xìng qíng guāi lì", meaning: "【贬义】形容人脾气怪僻乖张，行为乖张，难以相处。", example: "他性情乖戾，动辄发怒，同事们都不敢轻易得罪他。" },
+  "暴戾恣睢": { pinyin: "bào lì zì suī", meaning: "【贬义】形容人凶残狠毒，任意妄为，残暴蛮横，完全不顾他人感受。", example: "那个暴君暴戾恣睢，搞得民不聊生，终被推翻。" },
+  "阴险狡诈": { pinyin: "yīn xiǎn jiǎo zhà", meaning: "【贬义】形容人性格阴沉险恶，行事狡猾欺诈，暗中害人。", example: "他外表和善，内心却阴险狡诈，专门等待时机陷害他人。" },
+  "优柔寡断": { pinyin: "yōu róu guǎ duàn", meaning: "【贬义】形容人遇事犹豫不决，顾虑太多，缺乏果断的决断力。", example: "他优柔寡断，错过了许多宝贵的机会。" },
+  "孤芳自赏": { pinyin: "gū fāng zì shǎng", meaning: "【贬义】比喻自命清高，自我欣赏，不愿与人交流，目中无人。", example: "她孤芳自赏，不屑与人为伍，结果身边越来越孤独。" },
+  "桀骜不驯": { pinyin: "jié ào bù xùn", meaning: "【贬义/中性】形容人性格傲慢倔强，难以约束和管教，不服从管理。", example: "这个年轻人桀骜不驯，但骨子里有一股不服输的劲头。" },
+
+  // 智慧才能
+  "才高八斗": { pinyin: "cái gāo bā dǒu", meaning: "【褒义】形容人才华极高，学识丰富。出自南朝谢灵运称曹植"天下才共一石，曹子建独得八斗"。", example: "他才高八斗，下笔千言，是公认的文学才子。" },
+  "学富五车": { pinyin: "xué fù wǔ chē", meaning: "【褒义】形容人读书极多，学识渊博。出自《庄子·天下》，古时以竹简记书，五车形容书多。", example: "老教授学富五车，授课旁征博引，令学生叹服。" },
+  "足智多谋": { pinyin: "zú zhì duō móu", meaning: "【褒义】形容人富有智慧，善于谋划，点子多，办法多，能应对各种复杂局面。", example: "诸葛亮足智多谋，运筹帷幄，被后世尊为智慧的化身。" },
+  "运筹帷幄": { pinyin: "yùn chóu wéi wò", meaning: "【褒义】在后方制定作战策略，指善于统筹谋划，出谋划策，胸有成竹地指挥。出自《史记》。", example: "他运筹帷幄，决胜千里，整个项目在他的统筹下顺利完成。" },
+  "炉火纯青": { pinyin: "lú huǒ chún qīng", meaning: "【褒义】比喻学问、技艺或修养达到了纯熟完美的最高境界，不再有瑕疵。", example: "经过二十年的磨练，他的书法已达到炉火纯青的境界。" },
+  "出神入化": { pinyin: "chū shén rù huà", meaning: "【褒义】形容技艺高超神妙，已达到超凡入化的境界，令人叹为观止。", example: "她的钢琴演奏出神入化，每一个音符都饱含情感。" },
+  "愚昧无知": { pinyin: "yú mèi wú zhī", meaning: "【贬义】形容人头脑愚钝，见识浅薄，对事物缺乏认知和判断力。", example: "愚昧无知不可怕，可怕的是不知道自己无知却还固执己见。" },
+  "目光短浅": { pinyin: "mù guāng duǎn qiǎn", meaning: "【贬义】形容人眼光不远，见识狭隘，只顾眼前利益，缺乏长远考虑。", example: "他目光短浅，只看到了眼前的小利，却失去了长远的大机会。" },
+
+  // 品德修养
+  "两袖清风": { pinyin: "liǎng xiù qīng fēng", meaning: "【褒义】形容官员廉洁奉公，不贪污受贿，为官清廉，一身正气。出自于谦《入京》诗。", example: "于谦两袖清风，一生廉洁，是明代著名的清官。" },
+  "高风亮节": { pinyin: "gāo fēng liàng jié", meaning: "【褒义】形容人品德高尚，气节光明磊落，操守纯正，令人敬仰。", example: "他在金钱诱惑面前高风亮节，坚守原则，赢得了众人尊敬。" },
+  "虚怀若谷": { pinyin: "xū huái ruò gǔ", meaning: "【褒义】形容人非常谦虚，心胸开阔，能广泛接纳各种意见，如山谷般宽广。", example: "大师虚怀若谷，对初学者的问题也认真回答，毫无傲慢之色。" },
+  "口蜜腹剑": { pinyin: "kǒu mì fù jiàn", meaning: "【贬义】比喻嘴上说得好听甜蜜，心里却暗藏害人之意，两面三刀，口是心非。", example: "他口蜜腹剑，当面一套背后一套，早已被同事看穿。" },
+  "见利忘义": { pinyin: "jiàn lì wàng yì", meaning: "【贬义】形容人一见到利益就忘记了道义，只顾私利，不讲情义道德。", example: "他见利忘义，出卖了多年的挚友，换取了一时的利益。" },
+  "忘恩负义": { pinyin: "wàng ēn fù yì", meaning: "【贬义】形容人忘记别人对自己的恩情，做出背信弃义的事，不知感恩。", example: "他忘恩负义，在恩人落难时不仅不伸援手，反而落井下石。" },
+  "废寝忘食": { pinyin: "fèi qǐn wàng shí", meaning: "【褒义】形容人专心致志，勤奋刻苦，连睡觉吃饭都忘了，全身心投入工作或学习。", example: "为了完成这项研究，他废寝忘食，连续工作了三十个小时。" },
+
+  // 情绪心理
+  "欢天喜地": { pinyin: "huān tiān xǐ dì", meaning: "【褒义】形容人非常高兴，喜悦之情溢于言表，充满欢乐气氛。", example: "听说考上了名校，全家欢天喜地，奔走相告。" },
+  "怒发冲冠": { pinyin: "nù fà chōng guān", meaning: "【中性】形容人极度愤怒，愤怒到头发都竖起来顶住了帽子，形容大怒。", example: "听说百姓遭受如此欺压，将军怒发冲冠，立誓要为民除害。" },
+  "义愤填膺": { pinyin: "yì fèn tián yīng", meaning: "【褒义】形容人因正义感而产生的极度愤慨，胸中充满了正当的愤恨之情。", example: "看到新闻里的不公事件，网友们义愤填膺，纷纷发声。" },
+  "胆战心惊": { pinyin: "dǎn zhàn xīn jīng", meaning: "【贬义/中性】形容人非常害怕，胆子颤抖，内心恐惧，极度紧张不安。", example: "他走夜路经过废弃的大楼，胆战心惊，步步小心。" },
+  "魂飞魄散": { pinyin: "hún fēi pò sàn", meaning: "【中性】形容人极度惊恐，吓得魂灵出窍，完全失去了镇定。", example: "突如其来的爆炸声让在场的人魂飞魄散，四散奔逃。" },
+  "宠辱不惊": { pinyin: "chǒng rǔ bù jīng", meaning: "【褒义】形容人受到荣耀或屈辱时都能泰然处之，不为外在的得失所动，境界高远。", example: "他历经沧桑，早已宠辱不惊，对世间名利看得极淡。" },
+  "心旷神怡": { pinyin: "xīn kuàng shén yí", meaning: "【褒义】形容人心情开朗舒畅，精神愉快，感到无比舒适和放松。", example: "漫步在西湖边，微风拂面，令人心旷神怡。" },
+  "愁肠百结": { pinyin: "chóu cháng bǎi jié", meaning: "【中性/贬义】形容人内心愁苦郁结，忧愁像肠子打了很多结，难以排解。", example: "离别在即，她愁肠百结，夜不能寐。" },
+  "忐忑不安": { pinyin: "tǎn tè bù ān", meaning: "【中性】形容人心神不定，心里七上八下，非常不安稳，多因担心某事而忧虑。", example: "考试结果还未公布，他忐忑不安，坐立难宁。" },
+
+  // 言谈举止
+  "能言善辩": { pinyin: "néng yán shàn biàn", meaning: "【褒义】形容人口才出众，善于论辩，说话有条理，能言善道，有说服力。", example: "律师能言善辩，在法庭上据理力争，成功为当事人洗清了冤屈。" },
+  "口若悬河": { pinyin: "kǒu ruò xuán hé", meaning: "【褒义/中性】形容人说话滔滔不绝，如同悬挂的河水倾泻而下，能说会道。", example: "他口若悬河，一讲起自己的经历就停不下来，听众却津津有味。" },
+  "彬彬有礼": { pinyin: "bīn bīn yǒu lǐ", meaning: "【褒义】形容人举止文雅，待人有礼貌，礼数周到，温文尔雅。", example: "他待人彬彬有礼，无论对谁都保持着尊重，深受大家喜爱。" },
+  "雷厉风行": { pinyin: "léi lì fēng xíng", meaning: "【褒义】形容人做事果断，执行力强，像雷声那样威严，像风那样迅速，不拖延。", example: "新任领导雷厉风行，上任第一天就解决了长期悬而未决的问题。" },
+  "信口雌黄": { pinyin: "xìn kǒu cí huáng", meaning: "【贬义】形容人不顾事实，随口乱说，毫无根据地乱发议论。雌黄是古代涂改文字用的颜料。", example: "他信口雌黄，散布谣言，给他人造成了极大的伤害。" },
+
+  // 处世风格
+  "奋发图强": { pinyin: "fèn fā tú qiáng", meaning: "【褒义】形容人振作精神，努力上进，立志要让自己变得更强大，有所作为。", example: "经历了失败之后，他奋发图强，用了三年时间重新站了起来。" },
+  "百折不挠": { pinyin: "bǎi zhé bù náo", meaning: "【褒义】形容人意志坚强，无论遭受多少挫折和打击，都不屈服，越挫越勇。", example: "她百折不挠，在无数次拒绝后终于出版了第一部小说。" },
+  "趋炎附势": { pinyin: "qū yán fù shì", meaning: "【贬义】形容人奉承有权有势的人，见风使舵，逢迎拍马，缺乏骨气。", example: "他是个趋炎附势的小人，谁有权势就巴结谁。" },
+  "阿谀奉承": { pinyin: "ā yú fèng chéng", meaning: "【贬义】形容人用言语或行动讨好别人，说奉承话，一味迎合，无原则地奉承。", example: "他整天阿谀奉承上司，却从不踏实做事，令同事不齿。" },
+  "淡泊名利": { pinyin: "dàn bó míng lì", meaning: "【褒义】形容人对名声和利益看得很淡，不追求功名富贵，内心清净淡然。", example: "这位老学者淡泊名利，一生只专注于学术研究，从不钻营。" },
+
+  // 体能体质
+  "生龙活虎": { pinyin: "shēng lóng huó hǔ", meaning: "【褒义】形容人精力充沛，活力四射，行动矫健有力，充满生命力。", example: "孩子们在操场上生龙活虎，跑跳嬉戏，笑声不断。" },
+  "健步如飞": { pinyin: "jiàn bù rú fēi", meaning: "【褒义】形容人步伐轻快矫健，走路如飞一般迅速，精力旺盛。", example: "七十岁的老人健步如飞，每天坚持爬山，令人佩服。" },
+  "弱不禁风": { pinyin: "ruò bù jīn fēng", meaning: "【中性/贬义】形容人身体极为瘦弱，连风都受不了，体质虚弱，多形容纤弱女子。", example: "她从小体弱，弱不禁风，父母一直为她的健康担忧。" },
+  "年富力强": { pinyin: "nián fù lì qiáng", meaning: "【褒义】形容人正值壮年，年龄不老，精力充沛，体力旺盛，能干事业。", example: "他年富力强，正是大展宏图的好时候。" },
+  "精神矍铄": { pinyin: "jīng shén jué shuò", meaning: "【褒义】形容老年人精神饱满，目光有神，身体健朗，充满活力。", example: "八十高龄的老将军精神矍铄，声音洪亮，令人敬佩。" },
+};
+
+const panel = document.getElementById('popupPanel');
+const overlay = document.getElementById('popupOverlay');
+const closeBtn = document.getElementById('popupClose');
+
+function showPopup(word) {
+  const data = wordData[word];
+  document.getElementById('popupWord').textContent = word;
+  if (data) {
+    document.getElementById('popupPinyin').textContent = data.pinyin;
+    document.getElementById('popupMeaning').textContent = data.meaning;
+    const exEl = document.getElementById('popupExample');
+    exEl.textContent = data.example;
+    exEl.style.display = 'block';
+  } else {
+    document.getElementById('popupPinyin').textContent = '';
+    document.getElementById('popupMeaning').innerHTML = '<span class="popup-no-data">暂无详细解释，欢迎查阅《汉语大词典》获取更多信息。</span>';
+    document.getElementById('popupExample').style.display = 'none';
+  }
+  overlay.classList.add('active');
+  // 先显示再加 active 让动画生效
+  panel.style.display = 'block';
+  requestAnimationFrame(() => panel.classList.add('active'));
+}
+
+function hidePopup() {
+  panel.classList.remove('active');
+  overlay.classList.remove('active');
+  setTimeout(() => { panel.style.display = 'none'; }, 250);
+}
+
+// 点击所有 tag
+document.querySelectorAll('.tag').forEach(tag => {
+  tag.addEventListener('click', () => showPopup(tag.textContent.trim()));
+});
+
+// 关闭
+closeBtn.addEventListener('click', hidePopup);
+overlay.addEventListener('click', hidePopup);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hidePopup(); });
+</script>
 
 </body>
 </html>
