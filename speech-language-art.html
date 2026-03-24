@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>语言的艺术 — 北京大学演讲</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,400&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a1208;
+      --paper: #f5f0e8;
+      --gold: #c8a84b;
+      --gold-light: #e8d08a;
+      --red: #8b1a1a;
+      --muted: #6b5e4a;
+      --line: rgba(200, 168, 75, 0.3);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: 'Noto Serif SC', serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Paper texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.6;
+    }
+
+    /* Decorative vertical lines */
+    .page-lines {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 79px,
+          rgba(200,168,75,0.08) 79px,
+          rgba(200,168,75,0.08) 80px
+        );
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 40px;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '言';
+      position: absolute;
+      font-size: 60vw;
+      font-weight: 900;
+      color: rgba(200, 168, 75, 0.05);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      font-family: 'Noto Serif SC', serif;
+      line-height: 1;
+    }
+
+    .hero-badge {
+      font-family: 'Noto Sans SC', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      text-transform: uppercase;
+      border: 1px solid var(--gold);
+      padding: 6px 20px;
+      margin-bottom: 48px;
+      animation: fadeDown 1s ease both;
+    }
+
+    .hero-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(2.8rem, 8vw, 6rem);
+      font-weight: 900;
+      line-height: 1.1;
+      text-align: center;
+      color: var(--ink);
+      animation: fadeUp 1s ease 0.2s both;
+    }
+
+    .hero-title em {
+      font-style: normal;
+      color: var(--red);
+      position: relative;
+    }
+
+    .hero-title em::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: 0; right: 0;
+      height: 3px;
+      background: var(--gold);
+    }
+
+    .hero-subtitle {
+      margin-top: 32px;
+      font-size: 1.1rem;
+      color: var(--muted);
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-align: center;
+      animation: fadeUp 1s ease 0.4s both;
+    }
+
+    .hero-meta {
+      margin-top: 60px;
+      display: flex;
+      gap: 48px;
+      animation: fadeUp 1s ease 0.6s both;
+    }
+
+    .hero-meta-item {
+      text-align: center;
+    }
+
+    .hero-meta-item .label {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      font-family: 'Noto Sans SC', sans-serif;
+      font-weight: 500;
+    }
+
+    .hero-meta-item .value {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-top: 4px;
+      font-weight: 300;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      animation: fadeUp 1s ease 1s both;
+    }
+
+    .scroll-hint span {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      font-family: 'Noto Sans SC', sans-serif;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    /* ===== DIVIDER ===== */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 0 auto 64px;
+      max-width: 200px;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+    }
+
+    .divider-diamond {
+      width: 8px;
+      height: 8px;
+      background: var(--gold);
+      transform: rotate(45deg);
+    }
+
+    /* ===== SECTIONS ===== */
+    .section {
+      position: relative;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 80px 40px;
+    }
+
+    .section-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 5rem;
+      font-weight: 700;
+      color: rgba(200, 168, 75, 0.15);
+      line-height: 1;
+      margin-bottom: -20px;
+      margin-left: -8px;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 32px;
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .section-title::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 4px;
+      bottom: 4px;
+      width: 4px;
+      background: var(--gold);
+    }
+
+    .speech-text {
+      font-size: 1.05rem;
+      line-height: 2.2;
+      color: #2a2010;
+      font-weight: 300;
+    }
+
+    .speech-text p {
+      margin-bottom: 1.6em;
+    }
+
+    /* Quote blocks */
+    .quote-block {
+      margin: 40px 0;
+      padding: 32px 40px;
+      background: rgba(200, 168, 75, 0.06);
+      border-left: 3px solid var(--gold);
+      position: relative;
+    }
+
+    .quote-block::before {
+      content: '"';
+      font-family: 'Playfair Display', serif;
+      font-size: 6rem;
+      color: var(--gold);
+      opacity: 0.2;
+      position: absolute;
+      top: -10px;
+      left: 16px;
+      line-height: 1;
+    }
+
+    .quote-block p {
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--red);
+      line-height: 1.9;
+      font-weight: 400;
+      margin: 0;
+    }
+
+    .quote-block .quote-source {
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-style: normal;
+      letter-spacing: 0.1em;
+    }
+
+    /* Technique cards */
+    .techniques-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin: 40px 0;
+    }
+
+    .technique-card {
+      padding: 28px;
+      border: 1px solid rgba(200, 168, 75, 0.25);
+      background: rgba(255, 252, 245, 0.8);
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .technique-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(200, 168, 75, 0.15);
+    }
+
+    .technique-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--gold);
+      transition: width 0.4s ease;
+    }
+
+    .technique-card:hover::after {
+      width: 100%;
+    }
+
+    .technique-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: rgba(200, 168, 75, 0.3);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .technique-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--red);
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    .technique-desc {
+      font-size: 0.9rem;
+      line-height: 1.9;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* Example comparison */
+    .comparison {
+      margin: 32px 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid rgba(200, 168, 75, 0.3);
+      overflow: hidden;
+    }
+
+    .comparison-side {
+      padding: 24px 28px;
+    }
+
+    .comparison-side:first-child {
+      background: rgba(139, 26, 26, 0.04);
+      border-right: 1px solid rgba(200, 168, 75, 0.3);
+    }
+
+    .comparison-side:last-child {
+      background: rgba(200, 168, 75, 0.06);
+    }
+
+    .comparison-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      font-family: 'Noto Sans SC', sans-serif;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .comparison-side:first-child .comparison-label { color: var(--red); opacity: 0.6; }
+    .comparison-side:last-child .comparison-label { color: var(--gold); }
+
+    .comparison-text {
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: var(--ink);
+    }
+
+    /* Highlight text */
+    .highlight {
+      background: linear-gradient(to right, rgba(200,168,75,0.2), rgba(200,168,75,0.05));
+      padding: 2px 6px;
+      border-radius: 2px;
+    }
+
+    /* ===== CLOSING ===== */
+    .closing {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 100px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .closing::before {
+      content: '道';
+      position: absolute;
+      font-size: 50vw;
+      font-weight: 900;
+      color: rgba(200, 168, 75, 0.04);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    .closing-quote {
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-weight: 300;
+      line-height: 1.9;
+      max-width: 700px;
+      margin: 0 auto 48px;
+      color: rgba(245, 240, 232, 0.9);
+      position: relative;
+    }
+
+    .closing-quote strong {
+      color: var(--gold-light);
+      font-weight: 600;
+    }
+
+    .closing-author {
+      font-size: 0.8rem;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      font-family: 'Noto Sans SC', sans-serif;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #0e0b06;
+      color: rgba(245, 240, 232, 0.4);
+      text-align: center;
+      padding: 32px;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      font-family: 'Noto Sans SC', sans-serif;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.2); }
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+      .hero-meta { gap: 24px; flex-wrap: wrap; justify-content: center; }
+      .comparison { grid-template-columns: 1fr; }
+      .comparison-side:first-child { border-right: none; border-bottom: 1px solid rgba(200,168,75,0.3); }
+      .section { padding: 60px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-lines"></div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">北京大学 · 人文讲坛</div>
+    <h1 class="hero-title">
+      语言的<em>艺术</em><br/>与表达的智慧
+    </h1>
+    <p class="hero-subtitle">同一句话，换一种说法，境界天差地别</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <div class="label">主讲人</div>
+        <div class="value">中国语言学院 · 院士</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="label">场地</div>
+        <div class="value">北京大学百年讲堂</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="label">主题</div>
+        <div class="value">语言 · 表达 · 措辞</div>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      <span>向下阅读</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- OPENING -->
+  <section class="section reveal">
+    <div class="section-number">壹</div>
+    <h2 class="section-title">开篇：语言是人类最锋利的工具</h2>
+    <div class="speech-text">
+      <p>各位同学，各位来宾，大家好。</p>
+      <p>今天，我想和大家聊一个看似简单、实则深邃的话题——<span class="highlight">语言的艺术</span>。</p>
+      <p>人类与动物最根本的区别，不是直立行走，不是使用工具，而是语言。语言让我们能够传递思想、凝聚情感、构建文明。然而，同样是语言，有人用它点燃希望，有人用它制造误解；有人用它让人如沐春风，有人用它让人如坐针毡。</p>
+      <p>差别在哪里？在于<strong>措辞</strong>。</p>
+    </div>
+
+    <div class="quote-block">
+      <p>你说你喜欢别人的老婆，听起来不正经；<br/>
+      换一种说法——你喜欢的人，做了别人的老婆，<br/>
+      立刻就显得你特别深情。</p>
+      <div class="quote-source">— 语言重构的力量</div>
+    </div>
+
+    <div class="speech-text">
+      <p>这不是文字游戏，这是语言的本质——<span class="highlight">同样的事实，不同的框架，产生截然不同的情感共鸣</span>。今天，我将与大家分享七个核心的语言表达技巧，希望能让你们在日后的人生中，说出更有力量、更有温度的话。</p>
+    </div>
+  </section>
+
+  <!-- TECHNIQUES -->
+  <section class="section reveal">
+    <div class="section-number">贰</div>
+    <h2 class="section-title">七大核心表达技巧</h2>
+
+    <div class="techniques-grid">
+      <div class="technique-card">
+        <div class="technique-num">01</div>
+        <div class="technique-title">换框架，换立场</div>
+        <div class="technique-desc">同一件事，从不同角度切入，情感色彩截然不同。不要描述"你做了什么"，而要描述"这件事意味着什么"。框架决定感受。</div>
+      </div>
+      <div class="technique-card">
+        <div class="technique-num">02</div>
+        <div class="technique-title">具体胜于抽象</div>
+        <div class="technique-desc">"我很爱你"不如"每次你笑的时候，我都想把那一刻永远留住"。具体的细节让人相信，抽象的表达让人怀疑。</div>
+      </div>
+      <div class="technique-card">
+        <div class="technique-num">03</div>
+        <div class="technique-title">弱化自我，强化对方</div>
+        <div class="technique-desc">把"我觉得你错了"换成"我可能理解得不够准确，你能帮我再解释一下吗？"——同样是质疑，后者让人愿意倾听。</div>
+      </div>
+      <div class="technique-card">
+        <div class="technique-num">04</div>
+        <div class="technique-title">用"因为"赋予理由</div>
+        <div class="technique-desc">心理学研究表明，人们对带有"因为"的请求接受率高出34%。哪怕理由很普通，"因为"本身就能降低抵触感。</div>
+      </div>
+      <div class="technique-card">
+        <div class="technique-num">05</div>
+        <div class="technique-title">负面转正面</div>
+        <div class="technique-desc">"你一上学就难受"是抱怨；"浑身难受，但我依旧坚持上学"是榜样。把困境变成坚持的证明，语言就有了力量。</div>
+      </div>
+      <div class="technique-card">
+        <div class="technique-num">06</div>
+        <div class="technique-title">留白与停顿的艺术</div>
+        <div class="technique-desc">最有力量的话，往往不是说满的。适当的停顿、未说完的句子，给听者留下想象空间，反而比说尽更有冲击力。</div>
+      </div>
+      <div class="technique-card">
+        <div class="technique-num">07</div>
+        <div class="technique-title">用故事代替说教</div>
+        <div class="technique-desc">没有人喜欢被教育，但所有人都喜欢听故事。把你的观点藏进一个故事里，对方会自己得出结论，而且更加信服。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXAMPLES -->
+  <section class="section reveal">
+    <div class="section-number">叁</div>
+    <h2 class="section-title">对比示例：措辞的力量</h2>
+
+    <div class="speech-text">
+      <p>理论终究要落地。让我们通过几组真实的对比，感受措辞的魔力。</p>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-side">
+        <div class="comparison-label">普通表达</div>
+        <div class="comparison-text">你想跟她睡觉。</div>
+      </div>
+      <div class="comparison-side">
+        <div class="comparison-label">徐志摩式表达</div>
+        <div class="comparison-text">你想跟她一起起床。</div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-side">
+        <div class="comparison-label">让人反感</div>
+        <div class="comparison-text">你必须在今天之前完成这份报告。</div>
+      </div>
+      <div class="comparison-side">
+        <div class="comparison-label">让人愿意配合</div>
+        <div class="comparison-text">如果今天能完成这份报告，你会帮了我一个大忙。</div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-side">
+        <div class="comparison-label">批评</div>
+        <div class="comparison-text">你这个方案有很多问题。</div>
+      </div>
+      <div class="comparison-side">
+        <div class="comparison-label">建设性反馈</div>
+        <div class="comparison-text">这个方向很有潜力，如果在细节上再打磨一下，会非常出色。</div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-side">
+        <div class="comparison-label">拒绝</div>
+        <div class="comparison-text">我没时间。</div>
+      </div>
+      <div class="comparison-side">
+        <div class="comparison-label">有温度的拒绝</div>
+        <div class="comparison-text">我很想帮你，但这段时间我已经承诺了另一件事，等我腾出手来，第一个找你。</div>
+      </div>
+    </div>
+
+    <div class="speech-text" style="margin-top: 40px;">
+      <p>你看，<span class="highlight">事实没有变，改变的只是语言的包装</span>。但这层包装，决定了对方是否愿意打开它。</p>
+    </div>
+  </section>
+
+  <!-- DEEPER -->
+  <section class="section reveal">
+    <div class="section-number">肆</div>
+    <h2 class="section-title">更深的思考：语言背后是人格</h2>
+    <div class="speech-text">
+      <p>然而，我必须在这里提出一个警示。</p>
+      <p>语言技巧是一把双刃剑。它可以让你更好地表达真实的善意，也可以成为操控他人的工具。我见过太多人，学了一些话术，却把它用在了欺骗和利用上。</p>
+      <p>真正的语言艺术，不是让你说出"听起来好听的谎言"，而是让你说出<span class="highlight">"真实的话，以最好的方式"</span>。</p>
+      <p>孔子说："言忠信，行笃敬。"语言的根基是诚信。一个人可以不善言辞，但只要真诚，依然令人信赖；一个人可以口若悬河，但若言不由衷，终究会被识破。</p>
+      <p>所以，我今天教给你们的技巧，是为了让你们的真心，能够更准确地抵达对方的心里。而不是用来包装一颗空洞的心。</p>
+    </div>
+
+    <div class="quote-block">
+      <p>语言是思想的衣裳。<br/>
+      好的衣裳，让人看见你的美；<br/>
+      但若没有内在，再华美的衣裳，也只是一具空壳。</p>
+      <div class="quote-source">— 本讲核心观点</div>
+    </div>
+  </section>
+
+  <!-- PRACTICE -->
+  <section class="section reveal">
+    <div class="section-number">伍</div>
+    <h2 class="section-title">如何练习：语言是可以训练的</h2>
+    <div class="speech-text">
+      <p>很多人以为，语言表达是天赋。错了。语言是可以训练的，就像肌肉一样。</p>
+      <p><strong>第一，大量阅读。</strong>阅读是语言的输入。读好的文学、好的演讲、好的文章，你的语言库会自然丰富。你不需要刻意背金句，好的表达读多了，自然会内化。</p>
+      <p><strong>第二，刻意练习改写。</strong>每天找一句话，试着用三种不同的方式表达同一个意思。感受不同措辞带来的不同感受。这是最直接的训练方式。</p>
+      <p><strong>第三，观察高手。</strong>注意那些让你感动、让你信服、让你开心的话，是怎么说的。拆解它的结构，学习它的逻辑。</p>
+      <p><strong>第四，开口说，不要怕错。</strong>语言的进步在于使用，不在于思考。说错了没关系，说多了自然就好了。</p>
+    </div>
+  </section>
+
+  <!-- CLOSING -->
+  <div class="closing">
+    <p class="closing-quote">
+      语言是你递给世界的名片。<br/>
+      <strong>你说话的方式，决定了世界如何回应你。</strong><br/><br/>
+      愿你们学会用语言传递温暖，<br/>
+      用表达构建连接，<br/>
+      用措辞，让这个世界<strong>多一点理解，少一点误会</strong>。
+    </p>
+    <div class="divider" style="max-width:120px; margin: 0 auto 32px;">
+      <div class="divider-line" style="background:rgba(200,168,75,0.4);"></div>
+      <div class="divider-diamond"></div>
+      <div class="divider-line" style="background:rgba(200,168,75,0.4);"></div>
+    </div>
+    <div class="closing-author">谢谢大家 · 北京大学人文讲坛</div>
+  </div>
+
+  <footer>
+    © 北京大学人文讲坛 · 语言的艺术与表达的智慧 · 版权所有
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
